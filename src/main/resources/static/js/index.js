@@ -16,22 +16,32 @@ function openChat() {
     if (usernameInput !== "") {
         popup.style.display = "none";
         chatContainer.classList.remove("hidden");
+        Client.send("/app/chatMessage");
         sessionStorage.setItem("user", usernameInput);
     } else {
         alert("Digite um nome válido!");
     }
 }
 
+
 function sendMessage(e) {
     e.preventDefault();
     const messageInput = document.getElementById("messageInput").value;
 
     const message = {
-        user: sessionStorage.getItem("user"),
+        username: sessionStorage.getItem("user"),
         msg: messageInput
     };
 
-    Client.send("/app/chatMessage", {}, JSON.stringify(message));
+    axios.post('http://localhost:8080/message', message)
+    .then(function (response) {
+        console.log('Resposta do servidor:', response.data);
+        Client.send("/app/chatMessage");
+    })
+    .catch(function (error) {
+        console.error('Ocorreu um erro:', error);
+    });
+
 
     document.getElementById("messageInput").value = "";
 }
@@ -46,13 +56,17 @@ function displayMessage(message, name) {
 
 function connect(){
     Client.connect({}, function (frame) {
-        console.log('Conectado: ' + frame);
-
-
+        
         Client.subscribe('/canal', function (message) {
-            const chatMessage = JSON.parse(message.body);
-            displayMessage(chatMessage.msg, chatMessage.user);
+            const chatMessages = JSON.parse(message.body);
+            const chat = document.getElementById("chatMessages");
+            chat.innerHTML = '';
+            chatMessages.forEach(chatMessage => {
+                displayMessage(chatMessage.msg, chatMessage.username);
+            });
+            
         });
+        
     });
 }
 

@@ -17,7 +17,7 @@
     <div id="chatMessages"></div>
     <div class="chatInput">
         <form onsubmit="sendMessage(event)">
-            <input type="text" id="messageInput" placeholder="Digite sua mensagem">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem" required>
             <button type="submit">Enviar</button>
         </form>
 
@@ -31,5 +31,6 @@
         <button  onclick="openChat()">Entrar no Chat</button>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
 </html>
